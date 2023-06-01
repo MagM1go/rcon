@@ -70,14 +70,3 @@ class RCON:
         command_output = await self.send_packet(SERVER_DATA_EXEC_COMMAND_ID, command)
 
         return command_output
-
-
-async def main():
-    rcon = RCON("localhost", 234234, "123test")
-
-    async with rcon as connection:
-        await connection.connect_to_rcon()
-
-        output = await connection.execute_command(command="deop magm1go_")
-
-    return output
