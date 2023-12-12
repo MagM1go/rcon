@@ -4,10 +4,15 @@ import socket
 import struct
 import asyncio
 
-from constants import *
+
 
 
 class RCON:
+    SERVER_DATA_AUTH_ID = 3
+    SERVER_DATA_EXEC_COMMAND_ID = 2
+    SERVER_DATA_RESPONSE_VALUE = 0
+    EMPTY_BYTE_STRING = b"\x00\x00"
+
     def __init__(self, server_ip: str, rcon_port: int, rcon_password: str) -> None:
         self.server_ip = server_ip
         self.rcon_port = rcon_port
@@ -33,8 +38,8 @@ class RCON:
         self.__socket.close()
 
     async def send_packet(self, packet_type: int, data: str) -> str:
-        packet = struct.pack("<ii", SERVER_DATA_RESPONSE_VALUE, packet_type) + \
-            data.encode("utf8") + EMPTY_BYTE_STRING
+        packet = struct.pack("<ii", self.SERVER_DATA_RESPONSE_VALUE, packet_type) + \
+            data.encode("utf8") + self.EMPTY_BYTE_STRING
         packet_length = struct.pack("<i", len(packet))
 
         self.__socket.send(packet_length + packet)
@@ -66,7 +71,7 @@ class RCON:
         return data
 
     async def execute_command(self, command: str) -> str:
-        await self.send_packet(SERVER_DATA_AUTH_ID, self.rcon_password)
-        command_output = await self.send_packet(SERVER_DATA_EXEC_COMMAND_ID, command)
+        await self.send_packet(self.SERVER_DATA_AUTH_ID, self.rcon_password)
+        command_output = await self.send_packet(self.SERVER_DATA_EXEC_COMMAND_ID, command)
 
         return command_output
