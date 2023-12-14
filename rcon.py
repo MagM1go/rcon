@@ -5,8 +5,6 @@ import struct
 import asyncio
 
 
-
-
 class RCON:
     SERVER_DATA_AUTH_ID = 3
     SERVER_DATA_EXEC_COMMAND_ID = 2
