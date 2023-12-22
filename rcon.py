@@ -11,11 +11,7 @@ class RCON:
     SERVER_DATA_RESPONSE_VALUE = 0
     EMPTY_BYTE_STRING = b"\x00\x00"
 
-    def __init__(self, server_ip: str, rcon_port: int, rcon_password: str) -> None:
-        self.server_ip = server_ip
-        self.rcon_port = rcon_port
-        self.rcon_password = rcon_password
-
+    def __init__(self) -> None:
         self.__socket: socket.socket | None = None
 
     async def __aenter__(self) -> RCON:
@@ -26,9 +22,13 @@ class RCON:
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
         await self.close_connection()
 
-    async def connect_to_rcon(self) -> None:
+    async def connect_to_rcon(self, server_ip: str, rcon_port: int, rcon_password: str) -> None:
         sock = socket.socket()
         sock.connect((self.server_ip, self.rcon_port))
+
+        self.server_ip = server_ip
+        self.rcon_port = rcon_port
+        self.rcon_password = rcon_password
 
         self.__socket = sock
 
@@ -43,7 +43,6 @@ class RCON:
         self.__socket.send(packet_length + packet)
 
         received_message = await self.receive_message()
-
         return received_message.decode("utf8")
 
     async def receive_message(self):
